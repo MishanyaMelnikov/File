@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class Main {
@@ -10,32 +11,34 @@ public class Main {
         String savePath = "C:/Users/misha/IdeaProjects/File/Games/savegames/";
         String zipPath = "C:/Users/misha/IdeaProjects/File/Games/savegames/";
 
-        newDir(path, "src");
-        newDir(path, "res");
-        newDir(path, "savegames");
-        newDir(path, "temp");
-        newDir(path + "/src", "main");
-        newDir(path + "/src", "test");
-        newFile(path + "/src/main", "Main.java");
-        newFile(path + "/src/main", "Utils.java");
-        newDir(path + "/res", "drawables");
-        newDir(path + "/res", "vectors");
-        newDir(path + "/res", "icons");
-        newFile(path + "/temp", "temp.txt");
+//        newDir(path, "src");
+//        newDir(path, "res");
+//        newDir(path, "savegames");
+//        newDir(path, "temp");
+//        newDir(path + "/src", "main");
+//        newDir(path + "/src", "test");
+//        newFile(path + "/src/main", "Main.java");
+//        newFile(path + "/src/main", "Utils.java");
+//        newDir(path + "/res", "drawables");
+//        newDir(path + "/res", "vectors");
+//        newDir(path + "/res", "icons");
+//        newFile(path + "/temp", "temp.txt");
+//
+//        GameProgress game1 = new GameProgress(5,5,5,5);
+//        GameProgress game2 = new GameProgress(4,4,4,4);
+//        GameProgress game3 = new GameProgress(3,3,3,3);
+//
+//        saveGame(savePath + "save1.dat", game1);
+//        saveGame(savePath + "save2.dat", game2);
+//        saveGame(savePath + "save3.dat", game3);
 
-        GameProgress game1 = new GameProgress(5,5,5,5);
-        GameProgress game2 = new GameProgress(4,4,4,4);
-        GameProgress game3 = new GameProgress(3,3,3,3);
+//        zipFiles(zipPath + "save.zip",savePath);
 
-        saveGame(savePath + "save1.dat", game1);
-        saveGame(savePath + "save2.dat", game2);
-        saveGame(savePath + "save3.dat", game3);
+//        delete(savePath + "save1.dat");
+//        delete(savePath + "save2.dat");
+//        delete(savePath + "save3.dat");
 
-        zipFiles(zipPath + "save.zip",savePath);
-
-        delete(savePath, "save1.dat");
-        delete(savePath, "save2.dat");
-        delete(savePath, "save3.dat");
+        openZip(zipPath + "save.zip", savePath);
 
     }
 
@@ -100,16 +103,38 @@ public class Main {
                  fis.read(buffer);
                  zos.write(buffer);
                  zos.closeEntry();
-
                  }
-
 
         }catch (Exception ex){
             System.out.println(ex.getMessage());
         }
     }
-    public static void delete(String path, String fileName){
-        File file = new File(path + fileName);
+
+    public static void openZip(String zipPath, String unZipPath){
+        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipPath))){
+            ZipEntry entry;
+            String name;
+            while ((entry = zis.getNextEntry()) != null){
+                name = entry.getName();
+                FileOutputStream fos = new FileOutputStream(unZipPath + name);
+                for (int c = zis.read(); c != -1; c = zis.read()){
+                    fos.write(c);
+                }
+                fos.flush();
+                zis.closeEntry();
+                fos.close();
+            }
+        }catch (Exception ex){
+            System.out.println(ex.getMessage());
+        }
+    }
+
+
+
+
+
+    public static void delete(String savePath){
+        File file = new File(savePath);
         if (file.delete()) {
             System.out.println("Незаархивированные файлы удалены");
         }else {
